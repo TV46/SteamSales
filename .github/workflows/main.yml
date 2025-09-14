@@ -1,9 +1,9 @@
 name: SteamDB Scraper
 
 on:
-  workflow_dispatch: # Manual trigger
+  workflow_dispatch: # manual trigger
   schedule:
-    - cron: "0 0 * * *" # Daily at midnight UTC
+    - cron: "0 0 * * *" # daily at midnight UTC
 
 jobs:
   scrape:
@@ -28,10 +28,11 @@ jobs:
     - name: Run scraper
       run: python scraper.py
 
+    - name: Debug - list files
+      run: ls -lh
+
     - name: Upload HTML artifact
       uses: actions/upload-artifact@v4
       with:
         name: steamdb-html
         path: steamdb_page.html
-
-
