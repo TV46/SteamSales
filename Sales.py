@@ -1,9 +1,26 @@
 from bs4 import BeautifulSoup
 from ics import Calendar, Event
 from datetime import datetime, timedelta
-from datetime import datetime
 from icalendar import Calendar, Event
 import re
+
+results = []
+MONTHS = {
+    "january": 1, "jan": 1,
+    "february": 2, "februrary": 2, "feb": 2,
+    "march": 3, "mar": 3,
+    "april": 4, "apr": 4,
+    "may": 5,
+    "june": 6, "jun": 6,
+    "july": 7, "jul": 7,
+    "august": 8, "aug": 8,
+    "september": 9, "sept": 9, "sep": 9,
+    "october": 10, "oct": 10,
+    "november": 11, "nov": 11,
+    "december": 12, "dec": 12,
+}
+
+filename = 'sales.html'
 
 def extract_sales_from_file(filename):
     with open(filename, "r", encoding="utf-8") as f:
@@ -25,21 +42,6 @@ def extract_sales_from_file(filename):
 
         result.append(f"{name} — {date}")
     return result
-
-MONTHS = {
-    "january": 1, "jan": 1,
-    "february": 2, "februrary": 2, "feb": 2,
-    "march": 3, "mar": 3,
-    "april": 4, "apr": 4,
-    "may": 5,
-    "june": 6, "jun": 6,
-    "july": 7, "jul": 7,
-    "august": 8, "aug": 8,
-    "september": 9, "sept": 9, "sep": 9,
-    "october": 10, "oct": 10,
-    "november": 11, "nov": 11,
-    "december": 12, "dec": 12,
-}
 
 def parse_event(event_str: str):
     today = datetime.now()
@@ -137,11 +139,7 @@ def convert_to_ics(events, filename="events.ics"):
         f.write(cal.to_ical())
 
 if __name__ == "__main__":
-    filename = 'sales.html'
     sales = extract_sales_from_file(filename)
-#    events_to_ics(sales, "steam_events.ics")
-#   print(sales)
-    results = []
     for sale in sales:
         parsed = parse_event(sale)
         results.append(parsed)
