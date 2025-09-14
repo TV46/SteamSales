@@ -4,7 +4,9 @@ import tempfile
 import shutil
 import time
 
-# Create a truly temporary user-data-dir and clean up afterwards
+driver = None  # Initialize driver variable
+
+# Create a truly temporary user-data-dir
 temp_dir = tempfile.mkdtemp()
 
 try:
@@ -26,6 +28,7 @@ try:
     # Use a unique user-data-dir
     options.add_argument(f"--user-data-dir={temp_dir}")
 
+    # Create driver
     driver = webdriver.Chrome(options=options)
 
     driver.get("https://steamdb.info/app/730/")
@@ -33,7 +36,12 @@ try:
     html = driver.page_source
     print(html[:1000])
 
+except Exception as e:
+    print("Error occurred:", e)
+
 finally:
-    driver.quit()
+    # Quit driver only if it exists
+    if driver:
+        driver.quit()
     # Clean up temporary directory
     shutil.rmtree(temp_dir)
