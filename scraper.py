@@ -4,10 +4,9 @@ import tempfile
 import shutil
 import time
 
-driver = None  # Initialize driver variable
-
-# Create a truly temporary user-data-dir
+driver = None
 temp_dir = tempfile.mkdtemp()
+output_file = "steamdb_page.html"  # HTML output file
 
 try:
     options = Options()
@@ -22,26 +21,23 @@ try:
         "Chrome/117.0.0.0 Safari/537.36"
     )
 
-    # Point to Chromium binary on GitHub Actions
     options.binary_location = "/usr/bin/chromium-browser"
-
-    # Use a unique user-data-dir
     options.add_argument(f"--user-data-dir={temp_dir}")
 
-    # Create driver
     driver = webdriver.Chrome(options=options)
-
     driver.get("https://steamdb.info/app/730/")
     time.sleep(5)
+
     html = driver.page_source
-    print(html[:1000])
+
+    # Save HTML to a file
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(html)
 
 except Exception as e:
     print("Error occurred:", e)
 
 finally:
-    # Quit driver only if it exists
     if driver:
         driver.quit()
-    # Clean up temporary directory
     shutil.rmtree(temp_dir)
