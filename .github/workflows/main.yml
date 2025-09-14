@@ -1,20 +1,15 @@
-name: Run SteamDB Scraper
+name: SteamDB Scraper
 
 on:
+  workflow_dispatch: # Manual trigger
   schedule:
-    - cron: "0 0 * * *"  # Runs daily at midnight UTC
-  workflow_dispatch:      # Allows manual trigger
+    - cron: "0 0 * * *" # Daily at midnight UTC
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install Chromium
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y chromium-browser chromium-chromedriver
-
     - name: Checkout repository
       uses: actions/checkout@v3
 
@@ -23,14 +18,18 @@ jobs:
       with:
         python-version: 3.11
 
-    - name: Install dependencies
+    - name: Install dependencies and Chromium
       run: |
         sudo apt-get update
         sudo apt-get install -y chromium-browser chromium-chromedriver
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install selenium
 
     - name: Run scraper
-      run: |
-        export PATH=$PATH:/usr/lib/chromium-browser/
-        python scraper.py
+      run: python scraper.py
+
+    - name: Upload HTML artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: steamdb-html
+        path: steamdb_page.html
