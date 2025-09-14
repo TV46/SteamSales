@@ -3,10 +3,11 @@ from selenium.webdriver.chrome.options import Options
 import tempfile
 import shutil
 import time
+import os
 
 driver = None
 temp_dir = tempfile.mkdtemp()
-output_file = "steamdb_page.html"  # HTML output file
+output_file = "steamdb_page.html"  # Save HTML in repo root
 
 try:
     options = Options()
@@ -21,18 +22,26 @@ try:
         "Chrome/117.0.0.0 Safari/537.36"
     )
 
+    # Point to Chromium binary on GitHub Actions
     options.binary_location = "/usr/bin/chromium-browser"
+
+    # Unique temporary user-data-dir
     options.add_argument(f"--user-data-dir={temp_dir}")
 
+    # Create WebDriver
     driver = webdriver.Chrome(options=options)
+
+    # Open SteamDB page
     driver.get("https://steamdb.info/app/730/")
-    time.sleep(5)
+    time.sleep(5)  # wait for page to load
 
     html = driver.page_source
 
-    # Save HTML to a file
+    # Save HTML to file
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(html)
+
+    print(f"Saved HTML to {os.path.abspath(output_file)}")
 
 except Exception as e:
     print("Error occurred:", e)
