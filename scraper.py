@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+import tempfile
 import time
 
 options = Options()
@@ -14,8 +15,12 @@ options.add_argument(
     "Chrome/117.0.0.0 Safari/537.36"
 )
 
-# **Important:** point to the correct Chromium binary
+# Point to the Chromium binary
 options.binary_location = "/usr/bin/chromium-browser"
+
+# Use a temporary user data directory
+temp_dir = tempfile.mkdtemp()
+options.add_argument(f"--user-data-dir={temp_dir}")
 
 driver = webdriver.Chrome(options=options)
 
