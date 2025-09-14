@@ -14,6 +14,9 @@ options.add_argument(
     "Chrome/117.0.0.0 Safari/537.36"
 )
 
+# **Important:** point to the correct Chromium binary
+options.binary_location = "/usr/bin/chromium-browser"
+
 driver = webdriver.Chrome(options=options)
 
 driver.get("https://steamdb.info/app/730/")
