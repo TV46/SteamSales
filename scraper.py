@@ -1,52 +1,34 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-import tempfile
-import shutil
 import time
 import os
+import shutil
 
 driver = None
-temp_dir = tempfile.mkdtemp()
-output_file = "steamdb_page.html"  # Save HTML in repo root
+output_file = os.path.join(os.getcwd(), "steamdb_page.html")
+temp_dir = f"/tmp/chrome-profile-{int(time.time())}"
 
 try:
     options = Options()
-    options.headless = True
+    options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument(
-        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/117.0.0.0 Safari/537.36"
-    )
-
-    # Point to Chromium binary on GitHub Actions
-    options.binary_location = "/usr/bin/chromium-browser"
-
-    # Unique temporary user-data-dir
     options.add_argument(f"--user-data-dir={temp_dir}")
+    options.binary_location = "/usr/bin/chromium"  # change if needed
 
-    # Create WebDriver
     driver = webdriver.Chrome(options=options)
-
-    # Open SteamDB page
     driver.get("https://steamdb.info/app/730/")
-    time.sleep(5)  # wait for page to load
+    time.sleep(5)
 
-    html = driver.page_source
+    print("Page title:", driver.title)  # debug
 
-    # Save HTML to file
     with open(output_file, "w", encoding="utf-8") as f:
-        f.write(html)
+        f.write(driver.page_source)
 
-    print(f"Saved HTML to {os.path.abspath(output_file)}")
-
-except Exception as e:
-    print("Error occurred:", e)
+    print(f"Saved HTML to {output_file}")
 
 finally:
     if driver:
         driver.quit()
-    shutil.rmtree(temp_dir)
+    shutil.rmtree(temp_dir, ignore_errors=True)
