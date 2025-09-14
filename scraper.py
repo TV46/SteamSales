@@ -1,32 +1,39 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import tempfile
+import shutil
 import time
 
-options = Options()
-options.headless = True
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--disable-gpu")
-options.add_argument("--window-size=1920,1080")
-options.add_argument(
-    "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/117.0.0.0 Safari/537.36"
-)
-
-# Point to the Chromium binary
-options.binary_location = "/usr/bin/chromium-browser"
-
-# Use a temporary user data directory
+# Create a truly temporary user-data-dir and clean up afterwards
 temp_dir = tempfile.mkdtemp()
-options.add_argument(f"--user-data-dir={temp_dir}")
 
-driver = webdriver.Chrome(options=options)
+try:
+    options = Options()
+    options.headless = True
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument(
+        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/117.0.0.0 Safari/537.36"
+    )
 
-driver.get("https://steamdb.info/app/730/")
-time.sleep(5)
-html = driver.page_source
-print(html[:1000])
+    # Point to Chromium binary on GitHub Actions
+    options.binary_location = "/usr/bin/chromium-browser"
 
-driver.quit()
+    # Use a unique user-data-dir
+    options.add_argument(f"--user-data-dir={temp_dir}")
+
+    driver = webdriver.Chrome(options=options)
+
+    driver.get("https://steamdb.info/app/730/")
+    time.sleep(5)
+    html = driver.page_source
+    print(html[:1000])
+
+finally:
+    driver.quit()
+    # Clean up temporary directory
+    shutil.rmtree(temp_dir)
